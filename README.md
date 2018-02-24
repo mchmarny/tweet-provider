@@ -1,4 +1,4 @@
-# twitter-to-pubsub-event-pump
+# twitter-to-pubsub-event-pump [![Build Status](https://travis-ci.org/mchmarny/twitter-to-pubsub-event-pump.svg?branch=master)](https://travis-ci.org/mchmarny/twitter-to-pubsub-event-pump)
 
 Utility to subscribe to Twitter events with query and pump events into Google PubSub topic.
 
