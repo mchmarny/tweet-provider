@@ -4,7 +4,7 @@ Utility to subscribe to Twitter events with query and pump events into Google Pu
 
 ## Setup
 
-### Twitter 
+### Twitter
 
 To run this app you will need to obtain your personal Twitter app Consume and OAuth secrets (`Consumer Key`,
 `Consumer Secret`,`OAuth Access Token`,`OAuth Access Token Secret`) Good instructions on how to obtain these are located [here](https://iag.me/socialmedia/how-to-create-a-twitter-app-in-8-easy-steps/)
@@ -22,7 +22,7 @@ export T_ACCESS_SECRET="***"
 
 If you don't already have GCP account, you can run this entire app using the Google Cloud Platform (GCP) [free tier](https://cloud.google.com/free/). Once you create project, you will need to pass the `GCLOUD_PROJECT` argument on each execution or you can define it as environment variables like this:
 
-```shell 
+```shell
 export GCLOUD_PROJECT="YOUR_PROJECT_NAME"
 ```
 
@@ -31,11 +31,11 @@ export GCLOUD_PROJECT="YOUR_PROJECT_NAME"
 If you don't already have `gcloud`, you can find instructions on how to download and install the GCP SDK [here](https://cloud.google.com/sdk/)
 
 
-#### Service Account 
+#### Service Account
 
 You will need to set up GCP authentication using service account. You can find instructions how to do this [here](https://cloud.google.com/video-intelligence/docs/common/auth#set_up_a_service_account). After you download your service account file you will need to define
 
-```shell 
+```shell
 export GOOGLE_APPLICATION_CREDENTIALS=<path_to_service_account_file>
 ```
 
@@ -43,26 +43,31 @@ export GOOGLE_APPLICATION_CREDENTIALS=<path_to_service_account_file>
 
 You can create GCP PubSub topic `gcloud` by executing the following command:
 
-```shell 
+```shell
 gcloud pubsub topics create tweets
 ```
 
+Also, if you wanna monitor the tweets put on PubSub topic you can create a subscription
+
+```shell
+gcloud pubsub subscriptions create tweets-sub --topic=tweets --topic-project=$GCLOUD_PROJECT
+```
+
+To pull on the topic
+
+```shell
+gcloud alpha pubsub subscriptions pull tweets-sub --wait
+```
+
+
 ## Build
 
-To first build the app you can execute first `make dep` which will assure your environment has the necessary dependencies. Alternatively you can restore the app dependencies 
+To first build the app you can execute first `make dep` which will assure your environment has the necessary dependencies
 
-```shell
-go get github.com/tools/godep
-godep restore
-```
+Then run `make build` to build the app or alternatively you can run the build command directly
 
-and then `make build` to build the app or alternatively you can run the build command directly
 
-```shell
-go build -v -o bin/tpump
-```
-
-## Run 
+## Run
 
 You can run the app (assuming it's already built) using the following command. You can use the `serverless` sample or use your own query. The twitter search query operators are outlined [here](https://developer.twitter.com/en/docs/tweets/search/guides/standard-operators)
 
@@ -70,4 +75,4 @@ You can run the app (assuming it's already built) using the following command. Y
 bin/tpump --query="serverless OR faas OR openwhisk OR openfaas OR lambda"
 ```
 
-This command will search Twitter for tweets matching your query and push them one by one into GCP PubSub topic. 
+This command will search Twitter for tweets matching your query and push them one by one into GCP PubSub topic.

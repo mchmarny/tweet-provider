@@ -34,7 +34,7 @@ func main() {
 
 	// app
 	queryFreqInMin := flag.Int("queryFreqInMin", defaultQueryFrequency, "Frequency of Twitter queries")
-	searchQuery := flag.String("query", "", "Search Query")
+	searchQuery := flag.String("query", os.Getenv("T_QUERY"), "Search Query")
 
 	flag.Parse()
 

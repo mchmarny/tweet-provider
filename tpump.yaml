@@ -1,0 +1,63 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: tpump
+  name: tpump
+spec:
+  replicas: 1
+  template:
+    metadata:
+      annotations:
+        sidecar.istio.io/inject: "false"
+      labels:
+        app: tpump
+      name: tpump
+    spec:
+      containers:
+        - name: tpump
+          image: gcr.io/knative-samples/tpump:latest
+          imagePullPolicy: Always
+          env:
+            - name: T_QUERY
+              valueFrom:
+                configMapKeyRef:
+                  name: tpump-query
+                  key: T_QUERY
+            - name: T_CONSUMER_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: tpump-tw-key
+                  key: T_CONSUMER_KEY
+            - name: T_CONSUMER_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: tpump-tw-secret
+                  key: T_CONSUMER_SECRET
+            - name: T_ACCESS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: tpump-tw-token
+                  key: T_ACCESS_TOKEN
+            - name: T_ACCESS_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: tpump-tw-access
+                  key: T_ACCESS_SECRET
+            - name: GCLOUD_PROJECT
+              valueFrom:
+                secretKeyRef:
+                  name: tpump-gcloud-project
+                  key: GCLOUD_PROJECT
+          volumeMounts:
+            - name: "service-account"
+              mountPath: "/var/run/secret/cloud.google.com"
+            - name: "certs"
+              mountPath: "/etc/ssl/certs"
+      volumes:
+        - name: "service-account"
+          secret:
+            secretName: "s9-demo-sa"
+        - name: "certs"
+          hostPath:
+            path: "/etc/ssl/certs"
