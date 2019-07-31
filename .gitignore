@@ -1,9 +1,6 @@
 # mac shit
 .DS_Store
 
-# Dep
-vendor
-
 # credentials
 scripts/config.sh
 config.sh
