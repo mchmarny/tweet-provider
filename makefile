@@ -1,28 +1,21 @@
-
-# Go parameters
-BINARY_NAME=tpump
-GCP_PROJECT_NAME=knative-samples
+.PHONY: app client service
 
 all: test
-build:
-	go build -o ./bin/$(BINARY_NAME) -v
 
-build-linux:
-	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -v -o ./bin/$(BINARY_NAME)
+# DEV
+run:
+	go run *.go -v
 
-test:
-	go test -v ./...
+# BUILD
+mod:
+	go mod tidy
+	go mod vendor
 
-clean:
-	go clean
-	rm -f ./bin/$(BINARY_NAME)
+image: mod
+	gcloud builds submit \
+      --project cloudylabs-public \
+	  --tag gcr.io/cloudylabs-public/twitter-to-pubsub-event-pump:0.4.1
 
-run: build
-	bin/$(BINARY_NAME) --query="serverless OR faas OR openwhisk OR openfaas OR lambda"
-
-deps:
-	go get github.com/golang/dep/cmd/dep
-	dep ensure
-
-gcr:
-	gcloud container builds submit --project=$(GCP_PROJECT_NAME) --tag gcr.io/$(GCP_PROJECT_NAME)/$(BINARY_NAME):latest .
+query:
+	curl -H "Content-Type: application/json" \
+		 -X POST -d '{"query":"serverless"}' http://localhost:8080/

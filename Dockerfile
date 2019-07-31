@@ -1,14 +1,19 @@
-FROM golang:1.10.3
-WORKDIR /go/src/github.com/mchmarny/twitter-to-pubsub-event-pump/
-COPY . .
+# BUILD
+FROM golang:latest as builder
 
-# restore to pinnned versions of dependancies
-RUN go get github.com/golang/dep/cmd/dep
-RUN dep ensure
+# copy
+WORKDIR /src/
+COPY . /src/
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o tpump .
+# build
+ENV GO111MODULE=on
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+    go build -a -tags netgo \
+    -ldflags '-w -extldflags "-static"' \
+    -mod vendor \
+    -o app
 
-
-FROM scratch
-COPY --from=0 /go/src/github.com/mchmarny/twitter-to-pubsub-event-pump/tpump .
-ENTRYPOINT ["/tpump"]
+# RUN
+FROM gcr.io/distroless/static
+COPY --from=builder /src/app .
+ENTRYPOINT ["/app"]
