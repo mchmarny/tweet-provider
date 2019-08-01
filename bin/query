@@ -9,3 +9,7 @@ SERVICE_URL=$(gcloud beta run services describe ${SERVICE_NAME} \
 curl -H "Content-Type: application/json" \
 		 -X POST -d '{"query":"serverless"}' \
          "${SERVICE_URL}/query"
+
+curl -H "Content-Type: application/json" \
+		 -X POST -d '{"query":"google"}' \
+         "${SERVICE_URL}/query"

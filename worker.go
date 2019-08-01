@@ -21,6 +21,9 @@ func work(query string) int64 {
 	initStore(ctx)
 
 	savedState, err := getState(ctx, query)
+	{
+		logger.Fatalf("Error getting state for %s: %v", query, err)
+	}
 
 	config := oauth1.NewConfig(consumerKey, consumerSecret)
 	token := oauth1.NewToken(accessToken, accessSecret)

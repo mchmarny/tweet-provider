@@ -48,7 +48,12 @@ func getState(ctx context.Context, query string) (state *storeState, err error) 
 	id := getQueryID(query)
 	d, err := stateColl.Doc(id).Get(ctx)
 	if err != nil {
-		return nil, err
+		logger.Printf("Error getting state: %v", err)
+		return &storeState{
+			ID:     id,
+			Query:  query,
+			LastID: int64(0),
+		}, nil
 	}
 
 	var s storeState
