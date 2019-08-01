@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"hash/fnv"
 	"log"
 
 	"cloud.google.com/go/firestore"
@@ -12,7 +13,7 @@ import (
 
 const (
 	eventCollectionDefaultName = "twitter-query-state"
-	stateCollID                = "twitter-query-state-id"
+	recordIDPrefix             = "id-"
 )
 
 var (
@@ -23,7 +24,9 @@ var (
 )
 
 type storeState struct {
-	LastID int64 `json:"last_id" firestore:"last_id"`
+	ID     string `json:"id" firestore:"id"`
+	LastID int64  `json:"last_id" firestore:"last_id"`
+	Query  string `json:"query" firestore:"query"`
 }
 
 func initStore(ctx context.Context) {
@@ -36,9 +39,14 @@ func initStore(ctx context.Context) {
 	stateColl = c.Collection(eventCollectionName)
 }
 
-func getState(ctx context.Context) (state *storeState, err error) {
+func getState(ctx context.Context, query string) (state *storeState, err error) {
 
-	d, err := stateColl.Doc(stateCollID).Get(ctx)
+	if query == "" {
+		return nil, errors.New("Nil query")
+	}
+
+	id := getQueryID(query)
+	d, err := stateColl.Doc(id).Get(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -52,9 +60,19 @@ func getState(ctx context.Context) (state *storeState, err error) {
 }
 
 func saveState(ctx context.Context, state *storeState) error {
-	_, err := stateColl.Doc(stateCollID).Set(ctx, state)
+	if state == nil {
+		return errors.New("Nil state")
+	}
+	state.ID = getQueryID(state.Query)
+	_, err := stateColl.Doc(state.ID).Set(ctx, state)
 	if err != nil {
 		return fmt.Errorf("Error on save: %v", err)
 	}
 	return nil
+}
+
+func getQueryID(query string) string {
+	h := fnv.New32a()
+	h.Write([]byte(query))
+	return fmt.Sprintf("%s%d", recordIDPrefix, h.Sum32())
 }

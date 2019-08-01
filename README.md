@@ -1,12 +1,12 @@
-# twitter-to-pubsub-event-pump [![Build Status](https://travis-ci.org/mchmarny/twitter-to-pubsub-event-pump.svg?branch=master)](https://travis-ci.org/mchmarny/twitter-to-pubsub-event-pump)
+# tweet-provider
 
-Utility to subscribe to Twitter events with query and pump events into Google PubSub topic.
+Simple Twitter search service with PubSub result publishing and Firestore managed state
 
-## Setup
+## Pre-requirements
 
 ### Twitter
 
-To run this app you will need to obtain your personal Twitter app Consume and OAuth secrets (`Consumer Key`,
+To run this app you will need to obtain your personal Twitter app Consumer and OAuth secrets (`Consumer Key`,
 `Consumer Secret`,`OAuth Access Token`,`OAuth Access Token Secret`) Good instructions on how to obtain these are located [here](https://iag.me/socialmedia/how-to-create-a-twitter-app-in-8-easy-steps/)
 
 Once you obtain these four secrets from Twitter, you will need to pass these as arguments on each execution or you can define them as environment variables:
@@ -18,61 +18,58 @@ export T_ACCESS_TOKEN="***"
 export T_ACCESS_SECRET="***"
 ```
 
-### GCP
-
-If you don't already have GCP account, you can run this entire app using the Google Cloud Platform (GCP) [free tier](https://cloud.google.com/free/). Once you create project, you will need to pass the `GCLOUD_PROJECT` argument on each execution or you can define it as environment variables like this:
-
-```shell
-export GCLOUD_PROJECT="YOUR_PROJECT_NAME"
-```
-
 ### GCP CLI
 
 If you don't already have `gcloud`, you can find instructions on how to download and install the GCP SDK [here](https://cloud.google.com/sdk/)
 
+## Setup
 
-#### Service Account
+### Build Container Image
 
-You will need to set up GCP authentication using service account. You can find instructions how to do this [here](https://cloud.google.com/video-intelligence/docs/common/auth#set_up_a_service_account). After you download your service account file you will need to define
+Cloud Run uses container images so let's start bu building one....
 
-```shell
-export GOOGLE_APPLICATION_CREDENTIALS=<path_to_service_account_file>
-```
-
-#### Create PubSub topic
-
-You can create GCP PubSub topic `gcloud` by executing the following command:
+> PS. you can review each one of the provided scripts for complete gcloud command
 
 ```shell
-gcloud pubsub topics create tweets
+bin/image
 ```
 
-Also, if you wanna monitor the tweets put on PubSub topic you can create a subscription
+### Service Account and IAM Policies
+
+Next we will need to create a service account and assign it all the necessary IAM roles...
 
 ```shell
-gcloud pubsub subscriptions create tweets-sub --topic=tweets --topic-project=$GCLOUD_PROJECT
+bin/account
 ```
 
-To pull on the topic
+### Cloud Run Service
+
+Once you have the service account we can now deploy a new service and set it to run under that account.
+
+> Note, the deployed service will require authentication and run under the the service account identity we configured in the previous step
 
 ```shell
-gcloud alpha pubsub subscriptions pull tweets-sub --wait
+bin/service
 ```
 
+### Cloud Schedule
 
-## Build
+The Cloud Run service will search Twitter for provided query so now we just have to create a Cloud Schedule to execute the service every 10 min.
 
-To first build the app you can execute first `make dep` which will assure your environment has the necessary dependencies
-
-Then run `make build` to build the app or alternatively you can run the build command directly
-
-
-## Run
-
-You can run the app (assuming it's already built) using the following command. You can use the `serverless` sample or use your own query. The twitter search query operators are outlined [here](https://developer.twitter.com/en/docs/tweets/search/guides/standard-operators)
+> Note, the Cloud Run service stores the state for each query to that can start searches from the maximum tweet returned from the previous query.
 
 ```shell
-bin/tpump --query="serverless OR faas OR openwhisk OR openfaas OR lambda"
+bin/schedule
 ```
 
-This command will search Twitter for tweets matching your query and push them one by one into GCP PubSub topic.
+## Cleanup
+
+To cleanup all resources created by this sample execute
+
+```shell
+bin/cleanup
+```
+
+## Disclaimer
+
+This is my personal project and it does not represent my employer. I take no responsibility for issues caused by this code. I do my best to ensure that everything works, but if something goes wrong, my apologies is all you will get.

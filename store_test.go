@@ -17,6 +17,7 @@ func TestStateStore(t *testing.T) {
 	initStore(ctx)
 
 	state := &storeState{
+		Query:  "test AND query",
 		LastID: int64(1),
 	}
 
@@ -25,7 +26,7 @@ func TestStateStore(t *testing.T) {
 	assert.Nil(t, err)
 
 	// get
-	savedState, err := getState(ctx)
+	savedState, err := getState(ctx, state.Query)
 	assert.Nil(t, err)
 	assert.Equalf(t, savedState, state,
 		"Retreaved ID doesn't equal saved (%s != %s)",
