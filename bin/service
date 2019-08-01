@@ -1,12 +1,10 @@
 #!/bin/bash
 
-# GCP project name
-SERVICE_NAME="query-twitter"
-PROJECT=$(gcloud config get-value project)
-IMAGE_NAME="twitter-to-pubsub-event-pump:0.4.3"
+DIR="$(dirname "$0")"
+. "${DIR}/config"
 
 gcloud beta run deploy $SERVICE_NAME \
-	--image "gcr.io/${PROJECT}/${IMAGE_NAME}" \
+	--image "gcr.io/${PROJECT}/${SERVICE_NAME}:${IMAGE_VERSION}" \
 	--no-allow-unauthenticated \
 	--platform managed \
 	--region us-central1 \

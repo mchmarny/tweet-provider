@@ -1,8 +1,7 @@
 #!/bin/bash
 
-# GCP project name
-SERVICE_NAME="query-twitter"
-PROJECT=$(gcloud config get-value project)
+DIR="$(dirname "$0")"
+. "${DIR}/config"
 
 gcloud beta run services delete $SERVICE_NAME \
     --platform managed \

@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# GCP metadata
-PROJECT=$(gcloud config get-value project)
-IMAGE_NAME="twitter-to-pubsub-event-pump:0.4.3"
+DIR="$(dirname "$0")"
+. "${DIR}/config"
+
 
 go mod tidy
 go mod vendor
 
-gcloud builds submit --tag "gcr.io/${PROJECT}/${IMAGE_NAME}"
+gcloud builds submit --tag "gcr.io/${PROJECT}/${SERVICE_NAME}:${IMAGE_VERSION}"
 
 # public image, TODO: remove
 # gcloud builds submit \

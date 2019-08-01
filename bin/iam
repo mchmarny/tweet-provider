@@ -1,0 +1,44 @@
+#!/bin/bash
+
+DIR="$(dirname "$0")"
+. "${DIR}/config"
+
+# account
+gcloud iam service-accounts create "${SERVICE_NAME}-sa" \
+    --display-name "Twitter Query Demo Service Account"
+
+# schedule service roles
+gcloud projects add-iam-policy-binding $PROJECT \
+    --member "serviceAccount:service-${PROJECT_NUM}@gcp-sa-cloudscheduler.iam.gserviceaccount.com" \
+    --role roles/cloudscheduler.serviceAgent
+
+gcloud projects add-iam-policy-binding $PROJECT \
+    --member "serviceAccount:service-${PROJECT_NUM}@gcp-sa-cloudscheduler.iam.gserviceaccount.com" \
+    --role roles/run.invoker
+
+
+# run service account policies
+gcloud beta run services add-iam-policy-binding $SERVICE_NAME \
+    --member "serviceAccount:${SERVICE_NAME}-sa@${PROJECT}.iam.gserviceaccount.com" \
+    --role roles/run.invoker
+
+gcloud projects add-iam-policy-binding $PROJECT \
+    --member "serviceAccount:${SERVICE_NAME}-sa@${PROJECT}.iam.gserviceaccount.com" \
+    --role roles/run.invoker
+
+gcloud projects add-iam-policy-binding $PROJECT \
+    --member "serviceAccount:${SERVICE_NAME}-sa@${PROJECT}.iam.gserviceaccount.com" \
+    --role roles/pubsub.editor
+
+gcloud projects add-iam-policy-binding $PROJECT \
+    --member "serviceAccount:${SERVICE_NAME}-sa@${PROJECT}.iam.gserviceaccount.com" \
+    --role roles/datastore.user
+
+gcloud projects add-iam-policy-binding $PROJECT \
+	--member "serviceAccount:${SERVICE_NAME}-sa@${PROJECT}.iam.gserviceaccount.com" \
+    --role roles/logging.logWriter
+
+gcloud projects add-iam-policy-binding $PROJECT \
+	--member "serviceAccount:${SERVICE_NAME}-sa@${PROJECT}.iam.gserviceaccount.com" \
+    --role roles/cloudtrace.agent
+

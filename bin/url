@@ -1,7 +1,0 @@
-#!/bin/bash
-
-SERVICE_NAME="query-twitter"
-
-echo $(gcloud beta run services describe $SERVICE_NAME \
-    --region us-central1 \
-    --format="value(status.domain)")

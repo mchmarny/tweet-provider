@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# Global config
+SERVICE_NAME="tweet-provider"
+IMAGE_VERSION="0.5.1"
+
+# GCP metadata
+PROJECT=$(gcloud config get-value project)
+PROJECT_NUM=$(gcloud projects describe ${PROJECT} --format="value(projectNumber)")
+

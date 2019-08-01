@@ -1,4 +1,4 @@
-module github.com/mchmarny/twitter-to-pubsub-event-pump
+module github.com/mchmarny/tweet-provider
 
 go 1.12
 
