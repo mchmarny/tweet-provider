@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# GCP metadata
+SERVICE_NAME="query-twitter"
+PROJECT=$(gcloud config get-value project)
+PROJECT_NUM=$(gcloud projects describe ${PROJECT} --format="value(projectNumber)")
+SERVICE_URL=$(gcloud beta run services describe ${SERVICE_NAME} --region us-central1 --format="value(status.domain)")
+
+# allow pubsub to create tokens
+gcloud projects add-iam-policy-binding $PROJECT \
+    --member "serviceAccount:service-${PROJECT_NUM}@gcp-sa-cloudscheduler.iam.gserviceaccount.com" \
+    --role roles/cloudscheduler.serviceAgent
+
+gcloud projects add-iam-policy-binding $PROJECT \
+    --member "serviceAccount:service-${PROJECT_NUM}@gcp-sa-cloudscheduler.iam.gserviceaccount.com" \
+    --role roles/run.invoker
+
+gcloud beta scheduler jobs create http "${SERVICE_NAME}-invoke-schedule" \
+    --http-method POST \
+    --schedule "every 10 mins" \
+    --uri "${SERVICE_URL}/query" \
+    --message-body-from-file "query.json" \
+    --oidc-service-account-email "${SERVICE_NAME}-sa@${PROJECT}.iam.gserviceaccount.com" \
+    --oidc-token-audience "${SERVICE_URL}/query"
+

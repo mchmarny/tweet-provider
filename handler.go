@@ -6,34 +6,36 @@ import (
 	"time"
 )
 
-// requestHandler handles the HTTP request
-func requestHandler(w http.ResponseWriter, r *http.Request) {
+func queryHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-type", "application/json")
 
-	var sr serviceRequest
-	if err := json.NewDecoder(r.Body).Decode(&sr); err != nil {
+	var c serviceRequest
+	if err := json.NewDecoder(r.Body).Decode(&c); err != nil {
 		logger.Printf("Error decoding message: %v", err)
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode("Invalid Content")
+		writeResp(w, http.StatusBadRequest, "Invalid Content")
 		return
 	}
+	logger.Printf("Query: %v", c)
 
-	logger.Printf("Query: %v", sr)
 	startTime := time.Now()
-	lastID := work(sr.Query)
+	lastID := work(c.Query)
 
 	msg := &serviceResponse{
-		Query:    sr.Query,
+		Query:    c.Query,
 		LastID:   lastID,
 		Duration: time.Since(startTime),
 	}
 
 	logger.Printf("Result: %v", *msg)
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(msg)
+	writeResp(w, http.StatusOK, msg)
 
 	return
+}
+
+func writeResp(w http.ResponseWriter, status int, msg interface{}) {
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(msg)
 }
 
 type serviceRequest struct {

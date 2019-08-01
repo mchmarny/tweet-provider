@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# GCP project name
+SERVICE_NAME="query-twitter"
+PROJECT=$(gcloud config get-value project)
+
+gcloud beta run services delete $SERVICE_NAME \
+    --platform managed \
+    --region us-central1

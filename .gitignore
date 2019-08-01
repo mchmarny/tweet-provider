@@ -8,7 +8,5 @@ config.sh
 # all logs
 .log
 
-# bin
-bin/
 twitter-to-pubsub-event-pump
-pump
+twitter-query

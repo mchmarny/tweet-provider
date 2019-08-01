@@ -1,0 +1,8 @@
+#!/bin/bash
+
+SERVICE_NAME="query-twitter"
+SERVICE_URL=$(gcloud beta run services describe ${SERVICE_NAME} --region us-central1 --format="value(status.domain)")
+
+curl -H "Content-Type: application/json" \
+		 -X POST -d '{"query":"serverless"}' \
+         "${SERVICE_URL}/query"

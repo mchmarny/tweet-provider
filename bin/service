@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# GCP project name
+SERVICE_NAME="query-twitter"
+PROJECT=$(gcloud config get-value project)
+IMAGE_NAME="twitter-to-pubsub-event-pump:0.4.3"
+
+gcloud beta run deploy $SERVICE_NAME \
+	--image "gcr.io/${PROJECT}/${IMAGE_NAME}" \
+	--no-allow-unauthenticated \
+	--platform managed \
+	--region us-central1 \
+	--service-account "${SERVICE_NAME}-sa@${PROJECT}.iam.gserviceaccount.com" \
+	--set-env-vars "T_CONSUMER_KEY=${T_CONSUMER_KEY},T_CONSUMER_SECRET=${T_CONSUMER_SECRET},T_ACCESS_TOKEN=${T_ACCESS_TOKEN},T_ACCESS_SECRET=${T_ACCESS_SECRET}" \
+	--timeout 15m
