@@ -4,12 +4,15 @@ Simple Twitter search service with PubSub result publishing and Firestore manage
 
 ## Pre-requirements
 
+### GCP
+
+If you don't have one already, start by creating new project and configuring [Google Cloud SDK](https://cloud.google.com/sdk/docs/). Similarly, if you have not done so already, you will have [set up Cloud Run](https://cloud.google.com/run/docs/setup).
+
 ### Twitter
 
-To run this app you will need to obtain your personal Twitter app Consumer and OAuth secrets (`Consumer Key`,
-`Consumer Secret`,`OAuth Access Token`,`OAuth Access Token Secret`) Good instructions on how to obtain these are located [here](https://iag.me/socialmedia/how-to-create-a-twitter-app-in-8-easy-steps/)
+To query Twitter API you will need to obtain Twitter Consumer and OAuth tokens. Good instructions on how to obtain these are located [here](https://iag.me/socialmedia/how-to-create-a-twitter-app-in-8-easy-steps/).
 
-Once you obtain these four secrets from Twitter, you will need to pass these as arguments on each execution or you can define them as environment variables:
+Once you obtain these, export these as environment variables:
 
 ```shell
 export T_CONSUMER_KEY="***"
@@ -18,17 +21,13 @@ export T_ACCESS_TOKEN="***"
 export T_ACCESS_SECRET="***"
 ```
 
-### GCP CLI
-
-If you don't already have `gcloud`, you can find instructions on how to download and install the GCP SDK [here](https://cloud.google.com/sdk/)
-
 ## Setup
 
 ### Build Container Image
 
-Cloud Run uses container images so let's start bu building one....
+Cloud Run runs container images. To build one we are going to use the included [Dockerfile](./Dockerfile) and submit the build job to Cloud Build using [bin/image](./bin/image) script.
 
-> PS. you can review each one of the provided scripts for complete gcloud command
+> PS. you can review each one of the provided scripts for complete commands
 
 ```shell
 bin/image
@@ -36,7 +35,15 @@ bin/image
 
 ### Service Account and IAM Policies
 
-Next we will need to create a service account and assign it all the necessary IAM roles...
+In this example we are going to follow the [principle of least privilege](https://searchsecurity.techtarget.com/definition/principle-of-least-privilege-POLP) (POLP) to ensure our Cloud Schedule and Cloud Run servie have only the necessary rights and nothing more:
+
+* `run.invoker` - required to execute Cloud Run service
+* `pubsub.editor` - required to create and publish to Cloud PubSub
+* `datastore.user` - required to create and write/read to Firestore collection
+* `logging.logWriter` - required for Stackdriver logging
+* `cloudtrace.agent` - required for Stackdriver tracing
+
+To do that we will create a GCP service account and assign the necessary IAM policies and roles using [bin/account](./bin/account) script:
 
 ```shell
 bin/account
@@ -44,19 +51,19 @@ bin/account
 
 ### Cloud Run Service
 
-Once you have the service account we can now deploy a new service and set it to run under that account.
-
-> Note, the deployed service will require authentication and run under the the service account identity we configured in the previous step
+Once you have configured the GCP accounts, you can deploy a new Cloud Run service and set it to run under that account using and preventing unauthenticated access [bin/service](./bin/service) script:
 
 ```shell
 bin/service
 ```
 
+> Notice the use of the Twitter environment variables as configuration values using the `--set-env-vars` argument.
+
+> Since the Cloud Run services are stateless, we are going to stores the service state (last tweet ID to use as a starting point for subsequent searches) in Firestore collection (by default `twitter-query-state`).
+
 ### Cloud Schedule
 
-The Cloud Run service will search Twitter for provided query so now we just have to create a Cloud Schedule to execute the service every 10 min.
-
-> Note, the Cloud Run service stores the state for each query to that can start searches from the maximum tweet returned from the previous query.
+The Cloud Run service will search Twitter for provided query. To invoke that service on regular bases, we are going to configure Cloud Schedule to execute that service every 10 min using [bin/schedule](./bin/schedule) script.
 
 ```shell
 bin/schedule
@@ -64,7 +71,7 @@ bin/schedule
 
 ## Cleanup
 
-To cleanup all resources created by this sample execute
+To cleanup all resources created by this sample execute the [bin/cleanup](bin/cleanup) script.
 
 ```shell
 bin/cleanup
