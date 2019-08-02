@@ -1,6 +1,6 @@
 # tweet-provider
 
-Cloud Run Twitter search service invoked by Cloud Scheduler with query state in Firestore. It publishes search results to Cloud PubSub and its tweet throughput metrics for each run to Stackdriver.
+[Cloud Run](https://cloud.google.com/run/) Twitter search service, configured with its own service account as its [identity](https://cloud.google.com/run/docs/securing/service-identity). It's invoked by [Cloud Scheduler](https://cloud.google.com/scheduler/) and persists its with query state across multiple invocations in [Firestore](https://firebase.google.com/docs/firestore). It also publishes search results to [Cloud PubSub](https://cloud.google.com/pubsub/) for further consumption downstream, and records its tweet throughput metrics to [Stackdriver](https://cloud.google.com/stackdriver/).
 
 ![](./image/overview.png)
 
