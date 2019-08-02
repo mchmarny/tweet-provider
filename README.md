@@ -61,7 +61,9 @@ bin/service
 
 > Notice the use of the Twitter environment variables as configuration values using the `--set-env-vars` argument.
 
-> Since the Cloud Run services are stateless, we are going to stores the service state (last tweet ID to use as a starting point for subsequent searches) in Firestore collection (by default `twitter-query-state`).
+Since the Cloud Run services are stateless, we are going to stores the service state (last tweet ID to use as a starting point for subsequent searches) in Firestore collection (by default `twitter-query-state`).
+
+![](./image/firestore.png)
 
 ### Cloud Schedule
 
