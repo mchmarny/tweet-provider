@@ -1,6 +1,6 @@
 # tweet-provider
 
-[Cloud Run](https://cloud.google.com/run/) Twitter search service, configured service account [identity](https://cloud.google.com/run/docs/securing/service-identity), invoked by [Cloud Scheduler](https://cloud.google.com/scheduler/), and persisting its query state across invocations in [Firestore](https://firebase.google.com/docs/firestore). This service also publishes search results to [Cloud PubSub](https://cloud.google.com/pubsub/) for further consumption downstream, and records its tweet throughput as custom metrics in [Stackdriver](https://cloud.google.com/stackdriver/).
+[Cloud Run](https://cloud.google.com/run/) Twitter search service, configured service account [identity](https://cloud.google.com/run/docs/securing/service-identity), invoked by [Cloud Scheduler](https://cloud.google.com/scheduler/), and persisting across invocations query state in [Firestore](https://firebase.google.com/docs/firestore). This service also publishes search results to [Cloud PubSub](https://cloud.google.com/pubsub/) for further consumption downstream, and records its tweet throughput as custom metrics in [Stackdriver](https://cloud.google.com/stackdriver/).
 
 ![](./image/overview.png)
 
