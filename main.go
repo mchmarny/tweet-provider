@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"os"
 
@@ -11,10 +12,11 @@ import (
 )
 
 var (
-	logger = log.New(os.Stdout, "[TP] ", 0)
+	logger = log.New(os.Stdout, "", 0)
 
 	projectID      = pj.GetIDOrFail()
-	topic          = en.MustGetEnvVar("TOPIC", "tweets")
+	topic          = en.MustGetEnvVar("TOPIC", "search-tweets")
+	port           = en.MustGetEnvVar("PORT", "8080")
 	consumerKey    = en.MustGetEnvVar("T_CONSUMER_KEY", "")
 	consumerSecret = en.MustGetEnvVar("T_CONSUMER_SECRET", "")
 	accessToken    = en.MustGetEnvVar("T_ACCESS_TOKEN", "")
@@ -23,14 +25,16 @@ var (
 
 func main() {
 
+	logger.Printf("Project: %s, Topic: %s, Port: %s", projectID, topic, port)
+
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprint(w, "OK")
 	})
 
 	http.HandleFunc("/query", queryHandler)
 
-	port := fmt.Sprintf(":%s", en.MustGetEnvVar("PORT", "8080"))
-	if err := http.ListenAndServe(port, nil); err != nil {
+	hostPost := net.JoinHostPort("0.0.0.0", port)
+	if err := http.ListenAndServe(hostPost, nil); err != nil {
 		logger.Fatal(err)
 	}
 }

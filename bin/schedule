@@ -10,7 +10,9 @@ gcloud beta scheduler jobs create http "${SERVICE_NAME}-schedule" \
     --http-method POST \
     --schedule "every 10 mins" \
     --uri "${SERVICE_URL}/query" \
-    --message-body-from-file "query.json" \
+    --message-body '{"query": "serverless"}' \
     --oidc-service-account-email "${SERVICE_NAME}-sa@${PROJECT}.iam.gserviceaccount.com" \
     --oidc-token-audience "${SERVICE_URL}/query"
+
+
 

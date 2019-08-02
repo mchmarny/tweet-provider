@@ -5,7 +5,7 @@ DIR="$(dirname "$0")"
 
 # account
 gcloud iam service-accounts create "${SERVICE_NAME}-sa" \
-    --display-name "Twitter Query Demo Service Account"
+    --display-name "Search Twitter Service Account"
 
 # schedule service roles
 gcloud projects add-iam-policy-binding $PROJECT \
@@ -41,4 +41,3 @@ gcloud projects add-iam-policy-binding $PROJECT \
 gcloud projects add-iam-policy-binding $PROJECT \
 	--member "serviceAccount:${SERVICE_NAME}-sa@${PROJECT}.iam.gserviceaccount.com" \
     --role roles/cloudtrace.agent
-

@@ -3,11 +3,11 @@
 DIR="$(dirname "$0")"
 . "${DIR}/config"
 
+
 gcloud beta run deploy $SERVICE_NAME \
 	--image "gcr.io/${PROJECT}/${SERVICE_NAME}:${IMAGE_VERSION}" \
 	--no-allow-unauthenticated \
 	--platform managed \
 	--region us-central1 \
 	--service-account "${SERVICE_NAME}-sa@${PROJECT}.iam.gserviceaccount.com" \
-	--set-env-vars "T_CONSUMER_KEY=${T_CONSUMER_KEY},T_CONSUMER_SECRET=${T_CONSUMER_SECRET},T_ACCESS_TOKEN=${T_ACCESS_TOKEN},T_ACCESS_SECRET=${T_ACCESS_SECRET}" \
-	--timeout 15m
+	--set-env-vars "T_CONSUMER_KEY=${T_CONSUMER_KEY},T_CONSUMER_SECRET=${T_CONSUMER_SECRET},T_ACCESS_TOKEN=${T_ACCESS_TOKEN},T_ACCESS_SECRET=${T_ACCESS_SECRET}"

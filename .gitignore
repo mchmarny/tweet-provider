@@ -1,12 +1,8 @@
 # mac shit
 .DS_Store
 
-# credentials
-scripts/config.sh
-config.sh
-
 # all logs
 .log
 
-twitter-to-pubsub-event-pump
-twitter-query
+tweet-provider
+test

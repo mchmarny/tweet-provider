@@ -12,8 +12,7 @@ func work(query string) int64 {
 
 	ctx := context.Background()
 
-	// queue
-	q, err := newQueue(ctx, projectID, topic)
+	q, err := newQueue(ctx)
 	if err != nil {
 		logger.Fatalf("Error creating pubsub client: %v", err)
 	}
@@ -21,7 +20,7 @@ func work(query string) int64 {
 	initStore(ctx)
 
 	savedState, err := getState(ctx, query)
-	{
+	if err != nil {
 		logger.Fatalf("Error getting state for %s: %v", query, err)
 	}
 

@@ -3,6 +3,13 @@
 DIR="$(dirname "$0")"
 . "${DIR}/config"
 
+gcloud beta scheduler jobs delete "${SERVICE_NAME}-schedule" --quiet
+
 gcloud beta run services delete $SERVICE_NAME \
     --platform managed \
-    --region us-central1
+    --region us-central1 \
+    --quiet
+
+gcloud iam service-accounts delete \
+    "${SERVICE_NAME}-sa@${PROJECT}.iam.gserviceaccount.com" \
+    --quiet
