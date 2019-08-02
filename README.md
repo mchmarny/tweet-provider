@@ -1,20 +1,18 @@
 # tweet-provider
 
-Simple Twitter search service running in Cloud Run, invoked by Cloud Scheduler, with query state in Firestore. It publishes its search results to Cloud PubSub and its tweet throughput for each run as custom metric to Stackdriver.
+Cloud Run Twitter search service invoked by Cloud Scheduler with query state in Firestore. It publishes search results to Cloud PubSub and its tweet throughput metrics for each run to Stackdriver.
 
 ![](./image/overview.png)
 
 ## Pre-requirements
 
-### GCP
+### GCP Project and gcloud SDK
 
 If you don't have one already, start by creating new project and configuring [Google Cloud SDK](https://cloud.google.com/sdk/docs/). Similarly, if you have not done so already, you will have [set up Cloud Run](https://cloud.google.com/run/docs/setup).
 
 ### Twitter
 
-To query Twitter API you will need to obtain Twitter Consumer and OAuth tokens. Good instructions on how to obtain these are located [here](https://iag.me/socialmedia/how-to-create-a-twitter-app-in-8-easy-steps/).
-
-Once you obtain these, export these as environment variables:
+To query Twitter API you will need to obtain Twitter Consumer and OAuth tokens. Good instructions on how to obtain these are located [here](https://iag.me/socialmedia/how-to-create-a-twitter-app-in-8-easy-steps/). Once you obtain these, export these as environment variables:
 
 ```shell
 export T_CONSUMER_KEY="***"
@@ -29,7 +27,7 @@ export T_ACCESS_SECRET="***"
 
 Cloud Run runs container images. To build one we are going to use the included [Dockerfile](./Dockerfile) and submit the build job to Cloud Build using [bin/image](./bin/image) script.
 
-> Note, you can review each one of the provided scripts for complete commands
+> Note, you should review each one of the provided scripts for complete content of these commands
 
 ```shell
 bin/image
@@ -44,6 +42,7 @@ In this example we are going to follow the [principle of least privilege](https:
 * `datastore.user` - required to create and write/read to Firestore collection
 * `logging.logWriter` - required for Stackdriver logging
 * `cloudtrace.agent` - required for Stackdriver tracing
+* `monitoring.metricWriter` - required to write custom metrics to Stackdriver
 
 To do that we will create a GCP service account and assign the necessary IAM policies and roles using [bin/account](./bin/account) script:
 
