@@ -71,6 +71,12 @@ The Cloud Run service will search Twitter for provided query. To invoke that ser
 bin/schedule
 ```
 
+You can change the search term which is used to query Twitter in the Cloud Scheduler UI after the schedule job is created or by changing the `--message-body` parameter in the above command. By default, the query is:
+
+```json
+{ "query": "serverless" }
+```
+
 ## Monitoring
 
 You can monitor the throughput of retrieved tweets in Stackdriver using the Metric Explorer
