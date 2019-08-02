@@ -1,6 +1,6 @@
 # tweet-provider
 
-Simple Twitter search service running in Cloud Run, invoked by Cloud Scheduler, and Firestore query state. It publishes search results to Cloud PubSub and tweet throughput as custom metric to Stackdriver.
+Simple Twitter search service running in Cloud Run, invoked by Cloud Scheduler, with query state in Firestore. It publishes its search results to Cloud PubSub and its tweet throughput for each run as custom metric to Stackdriver.
 
 ![](./image/overview.png)
 
