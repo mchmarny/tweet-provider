@@ -82,11 +82,11 @@ func publishMetrics(ctx context.Context, total, errs int) {
 		logger.Fatalf("Error creating metric client: %v", err)
 	}
 
-	if err := c.Publish(ctx, "total", "search-tweets", total); err != nil {
+	if err := c.Publish(ctx, "total", "search-tweets", int64(total)); err != nil {
 		logger.Printf("Error logging metrics: %v", err)
 	}
 
-	if err := c.Publish(ctx, "errors", "search-tweets", errs); err != nil {
+	if err := c.Publish(ctx, "errors", "search-tweets", int64(errs)); err != nil {
 		logger.Printf("Error logging metrics: %v", err)
 	}
 }
