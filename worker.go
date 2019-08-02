@@ -75,7 +75,7 @@ func work(query string) int64 {
 	return savedState.LastID
 }
 
-func publishMetrics(ctx context.Context, total, errs int) {
+func publishMetrics(ctx context.Context, total, errs int) error {
 
 	c, err := metric.NewClient(ctx)
 	if err != nil {
@@ -84,9 +84,13 @@ func publishMetrics(ctx context.Context, total, errs int) {
 
 	if err := c.Publish(ctx, "total", "search-tweets", int64(total)); err != nil {
 		logger.Printf("Error logging metrics: %v", err)
+		return err
 	}
 
 	if err := c.Publish(ctx, "errors", "search-tweets", int64(errs)); err != nil {
 		logger.Printf("Error logging metrics: %v", err)
+		return err
 	}
+
+	return nil
 }

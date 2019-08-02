@@ -71,6 +71,12 @@ The Cloud Run service will search Twitter for provided query. To invoke that ser
 bin/schedule
 ```
 
+## Monitoring
+
+You can monitor the throughput of retrieved tweets in Stackdriver using the Metric Explorer
+
+![](./image/metrics.png)
+
 ## Cleanup
 
 To cleanup all resources created by this sample execute the [bin/cleanup](bin/cleanup) script.
