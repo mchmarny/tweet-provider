@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 
+	"github.com/mchmarny/gcputil/metric"
+
 	"github.com/dghubble/go-twitter/twitter"
 	"github.com/dghubble/oauth1"
 )
@@ -43,11 +45,14 @@ func work(query string) int64 {
 		logger.Fatalf("Error executing search %s - %v", resp.Status, err)
 	}
 
-	logger.Printf("Processing tweets: %d\n", len(search.Statuses))
+	foundTweets := len(search.Statuses)
+	errorTweets := 0
+	logger.Printf("Processing tweets: %d\n", foundTweets)
 	for _, t := range search.Statuses {
 
 		data, err := json.Marshal(t)
 		if err != nil {
+			errorTweets++
 			logger.Printf("Error while marshaling tweet: %v", err)
 			continue
 		}
@@ -55,8 +60,8 @@ func work(query string) int64 {
 		// tweets come in newest first order so just make sure we capture the highest number
 		// and start from there the next time
 		if t.ID > savedState.LastID {
-			// publish
 			if err = q.push(ctx, data); err != nil {
+				errorTweets++
 				logger.Printf("Error while publishing tweet: %v", err)
 				continue
 			}
@@ -65,7 +70,23 @@ func work(query string) int64 {
 	}
 
 	saveState(ctx, savedState)
+	publishMetrics(ctx, foundTweets, errorTweets)
 
-	logger.Printf("Done. Last ID: %d\n", savedState.LastID)
 	return savedState.LastID
+}
+
+func publishMetrics(ctx context.Context, total, errs int) {
+
+	c, err := metric.NewClient(ctx)
+	if err != nil {
+		logger.Fatalf("Error creating metric client: %v", err)
+	}
+
+	if err := c.Publish(ctx, "total", "search-tweets", total); err != nil {
+		logger.Printf("Error logging metrics: %v", err)
+	}
+
+	if err := c.Publish(ctx, "errors", "search-tweets", errs); err != nil {
+		logger.Printf("Error logging metrics: %v", err)
+	}
 }

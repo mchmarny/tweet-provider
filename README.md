@@ -27,7 +27,7 @@ export T_ACCESS_SECRET="***"
 
 Cloud Run runs container images. To build one we are going to use the included [Dockerfile](./Dockerfile) and submit the build job to Cloud Build using [bin/image](./bin/image) script.
 
-> PS. you can review each one of the provided scripts for complete commands
+> Note, you can review each one of the provided scripts for complete commands
 
 ```shell
 bin/image
