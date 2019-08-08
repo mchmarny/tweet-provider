@@ -35,7 +35,6 @@ func work(query string) int64 {
 	logger.Printf("Starting search for %s since ID: %d\n", query, savedState.LastID)
 	search, resp, err := tc.Search.Tweets(&twitter.SearchTweetParams{
 		Query:           query,
-		Lang:            "en",
 		Count:           100,
 		SinceID:         savedState.LastID,
 		IncludeEntities: twitter.Bool(true),
