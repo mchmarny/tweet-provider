@@ -2,7 +2,7 @@
 
 # Global config
 SERVICE_NAME="tweetsearcher"
-IMAGE_VERSION="0.6.3"
+IMAGE_VERSION="0.6.4"
 
 # GCP metadata
 PROJECT=$(gcloud config get-value project)
