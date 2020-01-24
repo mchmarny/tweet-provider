@@ -4,7 +4,7 @@ DIR="$(dirname "$0")"
 . "${DIR}/config"
 
 SERVICE_URL=$(gcloud beta run services describe ${SERVICE_NAME} \
-    --region us-central1 --format="value(status.domain)")
+    --region us-central1 --format="value(status.url)")
 
 gcloud beta scheduler jobs create http "${SERVICE_NAME}-schedule" \
     --http-method POST \
